@@ -1,0 +1,586 @@
+<!-- ##> ------ Karthik Sarode : karthik.sarode23@gmail.com - UI for excel files ------ -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Applied Jobs History</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --panel: rgba(255, 255, 255, 0.06);
+            --panel2: rgba(255, 255, 255, 0.09);
+            --text: rgba(255, 255, 255, 0.92);
+            --muted: rgba(255, 255, 255, 0.68);
+            --border: rgba(255, 255, 255, 0.14);
+            --good: #2fd076;
+            --bad: #ff5f5f;
+            --warn: #ffcc66;
+            --accent: #7aa2ff;
+            --shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+            color: var(--text);
+            background:
+                radial-gradient(1200px 700px at 20% -10%, rgba(122, 162, 255, 0.25), transparent 55%),
+                radial-gradient(900px 600px at 100% 0%, rgba(47, 208, 118, 0.18), transparent 55%),
+                var(--bg);
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 28px auto;
+            padding: 0 18px 40px;
+        }
+
+        .header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 18px 18px 16px;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 0.2px;
+        }
+        .title .meta {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .title code {
+            padding: 2px 6px;
+            background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            min-width: 320px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.22);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.88);
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--warn);
+            box-shadow: 0 0 0 4px rgba(255, 204, 102, 0.12);
+        }
+        .dot.good { background: var(--good); box-shadow: 0 0 0 4px rgba(47, 208, 118, 0.12); }
+        .dot.bad { background: var(--bad); box-shadow: 0 0 0 4px rgba(255, 95, 95, 0.12); }
+
+        button {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.92);
+            padding: 9px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.2px;
+            transition: transform 0.05s ease, background 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+        }
+        button:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.22); }
+        button:active { transform: translateY(1px); }
+        button:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-primary { background: rgba(122, 162, 255, 0.18); border-color: rgba(122, 162, 255, 0.35); }
+        .btn-primary:hover { background: rgba(122, 162, 255, 0.26); }
+        .btn-danger { background: rgba(255, 95, 95, 0.18); border-color: rgba(255, 95, 95, 0.35); }
+        .btn-danger:hover { background: rgba(255, 95, 95, 0.26); }
+
+        .hint {
+            color: var(--muted);
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .panel {
+            margin-top: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .toolbar {
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.20);
+        }
+        .toolbar .left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+        .toolbar .right {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        thead th {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 22, 45, 0.9);
+            backdrop-filter: blur(6px);
+            color: rgba(255, 255, 255, 0.88);
+            font-weight: 700;
+            font-size: 13px;
+            text-align: left;
+            padding: 12px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        tbody td {
+            padding: 12px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 13px;
+        }
+        tbody tr:hover { background: var(--panel2); }
+
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .sl-column { width: 64px; text-align: center; color: rgba(255, 255, 255, 0.78); }
+        .date-column { min-width: 190px; }
+        .applied-column { width: 90px; text-align: center; }
+        .tick { color: var(--good); font-weight: 900; }
+        .sort-button { margin-left: 6px; padding: 6px 8px; border-radius: 10px; font-weight: 800; }
+
+        .toast {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.25);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+        }
+        .toast.show { display: block; }
+        .toast.good { border-color: rgba(47, 208, 118, 0.35); background: rgba(47, 208, 118, 0.10); }
+        .toast.bad { border-color: rgba(255, 95, 95, 0.35); background: rgba(255, 95, 95, 0.10); }
+
+        @media (max-width: 880px) {
+            .header { flex-direction: column; }
+            .controls { align-items: flex-start; min-width: unset; }
+            .hint { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">
+                <h1>Applied Jobs History</h1>
+                <div class="meta">
+                    History CSV: <code id="csvPath">{{ csv_path }}</code>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="row">
+                    <div class="badge" id="statusBadge">
+                        <span class="dot" id="statusDot"></span>
+                        <span id="statusText">Checking status…</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <button class="btn-primary" id="startBtn" onclick="startBot()">Start Bot</button>
+                    <button class="btn-danger" id="stopBtn" onclick="stopBot()">Stop Bot</button>
+                    <button id="refreshBtn" onclick="refreshStatus(true)">Refresh Status</button>
+                </div>
+                <div class="hint" id="statusHint">Bot does not start automatically; click “Start Bot” to run it.</div>
+                <div class="toast" id="toast"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="toolbar">
+                <div class="left">
+                    <span id="rowsCount">0 rows</span>
+                    <span>•</span>
+                    <span id="lastUpdated">Last updated: —</span>
+                </div>
+                <div class="right">
+                    External Link
+                    <button class="sort-button" onclick="sortByExternalLink()" title="Sort by external link">⇅</button>
+                </div>
+            </div>
+
+            <table id="jobsTable" aria-label="Applied jobs history">
+                <thead>
+                    <tr>
+                        <th class="sl-column">Sl No</th>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>HR Contact</th>
+                        <th>External Link</th>
+                        <th class="date-column">Applied Date</th>
+                        <th class="applied-column">Applied</th>
+                    </tr>
+                </thead>
+                <tbody id="jobsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let sortOrder = "asc";
+        let jobsData = [];
+        let statusPollHandle = null;
+        let jobsPollHandle = null;
+
+        function showToast(message, kind) {
+            const el = document.getElementById("toast");
+            el.textContent = message;
+            el.className = "toast show" + (kind ? (" " + kind) : "");
+            window.clearTimeout(el._hideTimer);
+            el._hideTimer = window.setTimeout(() => {
+                el.className = "toast";
+            }, 4500);
+        }
+
+        function setButtons(running) {
+            document.getElementById("startBtn").disabled = !!running;
+            document.getElementById("stopBtn").disabled = !running;
+        }
+
+        function setStatusUI(payload) {
+            const dot = document.getElementById("statusDot");
+            const text = document.getElementById("statusText");
+            const hint = document.getElementById("statusHint");
+
+            if (!payload || !payload.status) {
+                dot.className = "dot bad";
+                text.textContent = "Status: unknown";
+                hint.textContent = "Could not read bot status. Check the server console/logs.";
+                setButtons(false);
+                return;
+            }
+
+            if (payload.status === "running") {
+                dot.className = "dot good";
+                text.textContent = `Status: running (PID ${payload.pid})`;
+                hint.textContent = "Bot is running. The history table refreshes automatically.";
+                setButtons(true);
+                startJobsPolling();
+            } else {
+                dot.className = "dot";
+                text.textContent = "Status: stopped (not running)";
+                hint.textContent = "Bot does not start automatically; click “Start Bot” to run it.";
+                setButtons(false);
+                stopJobsPolling();
+            }
+        }
+
+        async function refreshStatus(showErrors) {
+            try {
+                const resp = await fetch("/bot/status", { cache: "no-store" });
+                const payload = await resp.json();
+                setStatusUI(payload);
+                return payload;
+            } catch (e) {
+                setStatusUI(null);
+                if (showErrors) showToast("Failed to refresh bot status.", "bad");
+                return null;
+            }
+        }
+
+        async function startBot() {
+            try {
+                const resp = await fetch("/bot/start", { method: "POST" });
+                const payload = await resp.json();
+                if (!resp.ok) {
+                    showToast(payload.error || "Bot failed to start.", "bad");
+                    await refreshStatus(false);
+                    return;
+                }
+                showToast(`Bot started (PID ${payload.pid}).`, "good");
+                await refreshStatus(false);
+                await fetchJobs();
+            } catch (e) {
+                showToast("Bot failed to start.", "bad");
+            }
+        }
+
+        async function stopBot() {
+            try {
+                const resp = await fetch("/bot/stop", { method: "POST" });
+                const payload = await resp.json();
+                if (!resp.ok) {
+                    showToast(payload.error || "Bot is not running.", "bad");
+                    await refreshStatus(false);
+                    return;
+                }
+                showToast("Bot stopped.", "good");
+                await refreshStatus(false);
+                await fetchJobs();
+            } catch (e) {
+                showToast("Bot failed to stop.", "bad");
+            }
+        }
+
+        function createTableRow(job, index) {
+            const row = document.createElement("tr");
+
+            const slCell = document.createElement("td");
+            slCell.textContent = index + 1;
+            slCell.className = "sl-column";
+            row.appendChild(slCell);
+
+            const titleCell = document.createElement("td");
+            const titleLink = document.createElement("a");
+            titleLink.href = job.Job_Link || "#";
+            titleLink.textContent = job.Title || "(untitled)";
+            titleLink.target = "_blank";
+            titleCell.appendChild(titleLink);
+            row.appendChild(titleCell);
+
+            const companyCell = document.createElement("td");
+            companyCell.textContent = job.Company || "—";
+            row.appendChild(companyCell);
+
+            const hrCell = document.createElement("td");
+            if (job.HR_Name && job.HR_Name !== "Unknown" && job.HR_Link) {
+                const hrLink = document.createElement("a");
+                hrLink.href = job.HR_Link;
+                hrLink.textContent = job.HR_Name;
+                hrLink.target = "_blank";
+                hrCell.appendChild(hrLink);
+            } else if (job.HR_Name && job.HR_Name !== "Unknown") {
+                hrCell.textContent = job.HR_Name;
+            } else {
+                hrCell.textContent = "N/A";
+            }
+            row.appendChild(hrCell);
+
+            const extCell = document.createElement("td");
+            const dateCell = document.createElement("td");
+            dateCell.className = "date-column";
+            const appliedCell = document.createElement("td");
+            appliedCell.className = "applied-column";
+
+            const isApplied = job.Date_Applied && job.Date_Applied !== "Pending";
+            if (isApplied) {
+                appliedCell.innerHTML = '<span class="tick">✓</span>';
+                dateCell.textContent = formatAppliedDate(job.Date_Applied);
+                appliedCell.title = `Applied at: ${dateCell.textContent}`;
+            } else {
+                dateCell.textContent = "Pending";
+            }
+
+            if (job.External_Job_link === "Easy Applied") {
+                extCell.textContent = "Easy Applied";
+                appliedCell.innerHTML = '<span class="tick">✓</span>';
+                if (!isApplied) {
+                    dateCell.textContent = "Easy Applied";
+                }
+                appliedCell.title = appliedCell.title || dateCell.textContent;
+            } else if (job.External_Job_link) {
+                const extLink = document.createElement("a");
+                extLink.href = job.External_Job_link;
+                extLink.textContent = "External Link";
+                extLink.target = "_blank";
+
+                extLink.addEventListener("click", async () => {
+                    try {
+                        const response = await fetch(`/applied-jobs/${encodeURIComponent(job.Job_ID)}`, {
+                            method: "PUT",
+                            headers: { "Content-Type": "application/json" },
+                        });
+                        if (response.ok) {
+                            appliedCell.innerHTML = '<span class="tick">✓</span>';
+                            job.Date_Applied = formatAppliedDate(new Date());
+                            dateCell.textContent = job.Date_Applied;
+                            appliedCell.title = `Applied at: ${job.Date_Applied}`;
+                        }
+                    } catch (error) {
+                        console.error("Error updating applied date:", error);
+                    }
+                });
+
+                extCell.appendChild(extLink);
+            } else {
+                extCell.textContent = "N/A";
+            }
+
+            row.appendChild(extCell);
+            row.appendChild(dateCell);
+            row.appendChild(appliedCell);
+
+            return row;
+        }
+
+        function formatAppliedDate(value) {
+            if (!value || value === "Pending") {
+                return "Pending";
+            }
+
+            const alreadyFormatted = String(value).match(/^(\d{1,2})\s+[a-z]{3}\s+\d{4},\s+\d{1,2}:\d{2}:\d{2}\s+(AM|PM)$/i);
+            if (alreadyFormatted) {
+                const [datePart, timePart, suffix] = String(value).split(/\s*,\s*|\s+(?=AM|PM$)/i);
+                const [day, month, year] = datePart.split(/\s+/);
+                return `${day.padStart(2, "0")} ${month.toLowerCase()} ${year}, ${timePart.padStart(8, "0")} ${suffix.toUpperCase()}`;
+            }
+
+            const date = value instanceof Date ? value : new Date(String(value).replace(" ", "T"));
+            if (Number.isNaN(date.getTime())) {
+                return value || "Pending";
+            }
+
+            const day = String(date.getDate()).padStart(2, "0");
+            const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+            let hours = date.getHours();
+            const suffix = hours >= 12 ? "PM" : "AM";
+            hours = hours % 12 || 12;
+            const minutes = String(date.getMinutes()).padStart(2, "0");
+            const seconds = String(date.getSeconds()).padStart(2, "0");
+
+            return `${day} ${month} ${year}, ${String(hours).padStart(2, "0")}:${minutes}:${seconds} ${suffix}`;
+        }
+
+        function renderJobsTable() {
+            const tbody = document.getElementById("jobsBody");
+            tbody.innerHTML = "";
+            jobsData.forEach((job, index) => {
+                tbody.appendChild(createTableRow(job, index));
+            });
+
+            document.getElementById("rowsCount").textContent = `${jobsData.length} rows`;
+            document.getElementById("lastUpdated").textContent = `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        function sortByAppliedDateDesc() {
+            jobsData.sort((a, b) => parseAppliedDate(b.Date_Applied) - parseAppliedDate(a.Date_Applied));
+        }
+
+        function parseAppliedDate(value) {
+            if (!value || value === "Pending" || value === "Easy Applied") {
+                return 0;
+            }
+
+            const text = String(value).trim();
+            const formattedMatch = text.match(/^(\d{1,2})\s+([a-z]{3})\s+(\d{4}),\s+(\d{1,2}):(\d{2}):(\d{2})\s+(AM|PM)$/i);
+            if (formattedMatch) {
+                const months = { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 };
+                const day = Number(formattedMatch[1]);
+                const month = months[formattedMatch[2].toLowerCase()];
+                const year = Number(formattedMatch[3]);
+                let hours = Number(formattedMatch[4]);
+                const minutes = Number(formattedMatch[5]);
+                const seconds = Number(formattedMatch[6]);
+                const suffix = formattedMatch[7].toUpperCase();
+
+                if (suffix === "PM" && hours !== 12) hours += 12;
+                if (suffix === "AM" && hours === 12) hours = 0;
+
+                return new Date(year, month, day, hours, minutes, seconds).getTime();
+            }
+
+            const parsed = new Date(text.replace(" ", "T")).getTime();
+            return Number.isNaN(parsed) ? 0 : parsed;
+        }
+
+        function sortByExternalLink() {
+            sortOrder = sortOrder === "asc" ? "desc" : "asc";
+            jobsData.sort((a, b) => {
+                const valueA = a.External_Job_link || "";
+                const valueB = b.External_Job_link || "";
+                return sortOrder === "asc" ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+            });
+            renderJobsTable();
+        }
+
+        async function fetchJobs() {
+            try {
+                const response = await fetch("/applied-jobs", { cache: "no-store" });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload && payload.error ? payload.error : "Failed to load jobs");
+                }
+                jobsData = Array.isArray(payload) ? payload : [];
+                sortByAppliedDateDesc();
+                renderJobsTable();
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        function startStatusPolling() {
+            if (statusPollHandle) return;
+            statusPollHandle = window.setInterval(() => refreshStatus(false), 3000);
+        }
+
+        function startJobsPolling() {
+            if (jobsPollHandle) return;
+            jobsPollHandle = window.setInterval(() => fetchJobs(), 12000);
+        }
+
+        function stopJobsPolling() {
+            if (!jobsPollHandle) return;
+            window.clearInterval(jobsPollHandle);
+            jobsPollHandle = null;
+        }
+
+        (async function init() {
+            await fetchJobs();
+            await refreshStatus(false);
+            startStatusPolling();
+        })();
+    </script>
+</body>
+</html>
+
+<!-- ##< -->

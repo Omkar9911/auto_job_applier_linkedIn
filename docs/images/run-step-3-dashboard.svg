@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-label="Dashboard with start bot stop bot refresh status and applied jobs table">
+  <rect width="980" height="520" fill="#0b1020"/>
+  <rect x="56" y="48" width="868" height="122" rx="8" fill="#1f2937" stroke="#475569"/>
+  <text x="82" y="96" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">Applied Jobs History</text>
+  <text x="82" y="132" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="16">History CSV: all excels/all_applied_applications_history.csv</text>
+  <rect x="670" y="68" width="220" height="36" rx="18" fill="#111827" stroke="#475569"/>
+  <circle cx="692" cy="86" r="8" fill="#fbbf24"/>
+  <text x="710" y="92" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="16">Status: stopped</text>
+  <rect x="670" y="120" width="92" height="34" rx="8" fill="#1d4ed8" stroke="#60a5fa"/>
+  <text x="690" y="143" fill="#ffffff" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Start Bot</text>
+  <rect x="774" y="120" width="84" height="34" rx="8" fill="#3f1d2a" stroke="#7f1d1d"/>
+  <text x="794" y="143" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Stop Bot</text>
+  <rect x="56" y="204" width="868" height="260" rx="8" fill="#111827" stroke="#334155"/>
+  <text x="82" y="244" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="16">22 rows - Latest applied jobs display first</text>
+  <rect x="56" y="270" width="868" height="48" fill="#172033"/>
+  <text x="82" y="300" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Sl No</text>
+  <text x="150" y="300" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Job Title</text>
+  <text x="370" y="300" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Company</text>
+  <text x="540" y="300" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Applied Date</text>
+  <text x="775" y="300" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Applied</text>
+  <line x1="56" y1="318" x2="924" y2="318" stroke="#334155"/>
+  <text x="92" y="356" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">1</text>
+  <text x="150" y="356" fill="#60a5fa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Java Backend developer</text>
+  <text x="370" y="356" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">VySystem</text>
+  <text x="540" y="356" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">28 may 2025, 12:10:17 PM</text>
+  <text x="798" y="356" fill="#22c55e" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">OK</text>
+  <line x1="56" y1="382" x2="924" y2="382" stroke="#334155"/>
+  <text x="92" y="420" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">2</text>
+  <text x="150" y="420" fill="#60a5fa" font-family="Segoe UI, Arial, sans-serif" font-size="15">Java J2EE Developer</text>
+  <text x="370" y="420" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">Viraaj HR Solutions</text>
+  <text x="540" y="420" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="15">27 may 2025, 09:45:04 AM</text>
+  <text x="798" y="420" fill="#22c55e" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700">OK</text>
+</svg>

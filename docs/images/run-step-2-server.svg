@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-label="Flask dashboard server running on localhost 8080">
+  <rect width="980" height="420" fill="#111827"/>
+  <rect x="40" y="38" width="900" height="344" rx="8" fill="#0b1220" stroke="#334155"/>
+  <rect x="40" y="38" width="900" height="44" rx="8" fill="#1f2937"/>
+  <text x="64" y="67" fill="#e5e7eb" font-family="Segoe UI, Arial, sans-serif" font-size="18">Flask dashboard server</text>
+  <text x="56" y="126" fill="#e5e7eb" font-family="Consolas, monospace" font-size="22">PS&gt; python .\app.py</text>
+  <text x="56" y="176" fill="#94a3b8" font-family="Consolas, monospace" font-size="20">* Serving Flask app 'app'</text>
+  <text x="56" y="220" fill="#94a3b8" font-family="Consolas, monospace" font-size="20">* Debug mode: on</text>
+  <text x="56" y="264" fill="#22c55e" font-family="Consolas, monospace" font-size="22">* Running on http://127.0.0.1:8080</text>
+  <text x="56" y="308" fill="#94a3b8" font-family="Consolas, monospace" font-size="20">Press CTRL+C to quit</text>
+</svg>
