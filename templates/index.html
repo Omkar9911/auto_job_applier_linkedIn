@@ -1,4 +1,4 @@
-<!-- ##> ------ Karthik Sarode : karthik.sarode23@gmail.com - UI for excel files ------ -->
+﻿<!-- ##> ------ Karthik Sarode : karthik.sarode23@gmail.com - UI for excel files ------ -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -138,7 +138,8 @@
             border: 1px solid var(--border);
             background: var(--panel);
             box-shadow: var(--shadow);
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
         }
 
         .toolbar {
@@ -164,6 +165,7 @@
 
         table {
             width: 100%;
+            min-width: 1240px;
             border-collapse: separate;
             border-spacing: 0;
         }
@@ -193,7 +195,28 @@
         .sl-column { width: 64px; text-align: center; color: rgba(255, 255, 255, 0.78); }
         .date-column { min-width: 190px; }
         .applied-column { width: 90px; text-align: center; }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 78px;
+            padding: 5px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-applied { color: var(--good); background: rgba(47, 208, 118, 0.10); border-color: rgba(47, 208, 118, 0.28); }
+        .status-skipped { color: var(--warn); background: rgba(255, 204, 102, 0.10); border-color: rgba(255, 204, 102, 0.28); }
+        .status-failed { color: var(--bad); background: rgba(255, 95, 95, 0.10); border-color: rgba(255, 95, 95, 0.28); }
+        .details-cell {
+            max-width: 260px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .tick { color: var(--good); font-weight: 900; }
+        .external-column { min-width: 120px; }
         .sort-button { margin-left: 6px; padding: 6px 8px; border-radius: 10px; font-weight: 800; }
 
         .toast {
@@ -209,6 +232,99 @@
         .toast.show { display: block; }
         .toast.good { border-color: rgba(47, 208, 118, 0.35); background: rgba(47, 208, 118, 0.10); }
         .toast.bad { border-color: rgba(255, 95, 95, 0.35); background: rgba(255, 95, 95, 0.10); }
+
+        .settings-panel {
+            margin-top: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.055);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .settings-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.18);
+        }
+        .settings-head h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .settings-head p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        .settings-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .settings-tabs button.active {
+            background: rgba(122, 162, 255, 0.24);
+            border-color: rgba(122, 162, 255, 0.45);
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            padding: 14px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.22);
+            color: var(--text);
+            padding: 10px 11px;
+            font: inherit;
+            font-size: 13px;
+            outline: none;
+        }
+        .field textarea {
+            min-height: 104px;
+            resize: vertical;
+        }
+        .field input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+        .checkbox-row {
+            flex-direction: row;
+            align-items: center;
+            min-height: 62px;
+        }
+        .settings-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px;
+            border-top: 1px solid var(--border);
+        }
+        .settings-note {
+            color: var(--muted);
+            font-size: 12px;
+        }
 
         @media (max-width: 880px) {
             .header { flex-direction: column; }
@@ -231,7 +347,7 @@
                 <div class="row">
                     <div class="badge" id="statusBadge">
                         <span class="dot" id="statusDot"></span>
-                        <span id="statusText">Checking status…</span>
+                        <span id="statusText">Checking status...</span>
                     </div>
                 </div>
                 <div class="row">
@@ -239,21 +355,39 @@
                     <button class="btn-danger" id="stopBtn" onclick="stopBot()">Stop Bot</button>
                     <button id="refreshBtn" onclick="refreshStatus(true)">Refresh Status</button>
                 </div>
-                <div class="hint" id="statusHint">Bot does not start automatically; click “Start Bot” to run it.</div>
+                <div class="hint" id="statusHint">Bot does not start automatically; click "Start Bot" to run it.</div>
                 <div class="toast" id="toast"></div>
             </div>
+        </div>
+
+        <div class="settings-panel">
+            <div class="settings-head">
+                <div>
+                    <h2>Configuration</h2>
+                    <p>Edit user details, search filters, login, AI, and bot runtime settings without opening Python files.</p>
+                </div>
+                <button onclick="loadSettings()">Reload Settings</button>
+            </div>
+            <div class="settings-tabs" id="settingsTabs"></div>
+            <form id="settingsForm" onsubmit="saveSettings(event)">
+                <div class="settings-grid" id="settingsFields"></div>
+                <div class="settings-actions">
+                    <span class="settings-note" id="settingsNote">Settings apply when the bot starts or restarts.</span>
+                    <button class="btn-primary" type="submit">Save Configuration</button>
+                </div>
+            </form>
         </div>
 
         <div class="panel">
             <div class="toolbar">
                 <div class="left">
                     <span id="rowsCount">0 rows</span>
-                    <span>•</span>
-                    <span id="lastUpdated">Last updated: —</span>
+                    <span>-</span>
+                    <span id="lastUpdated">Last updated: -</span>
                 </div>
                 <div class="right">
                     External Link
-                    <button class="sort-button" onclick="sortByExternalLink()" title="Sort by external link">⇅</button>
+                    <button class="sort-button" onclick="sortByExternalLink()" title="Sort by external link">Sort</button>
                 </div>
             </div>
 
@@ -261,11 +395,14 @@
                 <thead>
                     <tr>
                         <th class="sl-column">Sl No</th>
+                        <th>Status</th>
                         <th>Job Title</th>
                         <th>Company</th>
                         <th>HR Contact</th>
-                        <th>External Link</th>
+                        <th class="external-column">External Link</th>
                         <th class="date-column">Applied Date</th>
+                        <th>Reason</th>
+                        <th>Details</th>
                         <th class="applied-column">Applied</th>
                     </tr>
                 </thead>
@@ -277,6 +414,8 @@
     <script>
         let sortOrder = "asc";
         let jobsData = [];
+        let settingsData = null;
+        let activeSettingsSection = null;
         let statusPollHandle = null;
         let jobsPollHandle = null;
 
@@ -317,7 +456,7 @@
             } else {
                 dot.className = "dot";
                 text.textContent = "Status: stopped (not running)";
-                hint.textContent = "Bot does not start automatically; click “Start Bot” to run it.";
+                hint.textContent = 'Bot does not start automatically; click "Start Bot" to run it.';
                 setButtons(false);
                 stopJobsPolling();
             }
@@ -370,6 +509,134 @@
             }
         }
 
+        async function loadSettings() {
+            try {
+                const response = await fetch("/settings", { cache: "no-store" });
+                settingsData = await response.json();
+                activeSettingsSection = activeSettingsSection || Object.keys(settingsData.sections || {})[0];
+                renderSettingsTabs();
+                renderSettingsFields();
+                const note = document.getElementById("settingsNote");
+                note.textContent = settingsData.bot_running
+                    ? "Bot is running. Save is allowed, but restart the bot to apply automation changes."
+                    : "Settings apply when the bot starts or restarts.";
+            } catch (error) {
+                console.error("Failed to load settings:", error);
+                showToast("Failed to load settings.", "bad");
+            }
+        }
+
+        function renderSettingsTabs() {
+            const tabs = document.getElementById("settingsTabs");
+            tabs.innerHTML = "";
+            Object.entries(settingsData.sections || {}).forEach(([key, section]) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = section.label;
+                button.className = key === activeSettingsSection ? "active" : "";
+                button.addEventListener("click", () => {
+                    activeSettingsSection = key;
+                    renderSettingsTabs();
+                    renderSettingsFields();
+                });
+                tabs.appendChild(button);
+            });
+        }
+
+        function renderSettingsFields() {
+            const fieldsContainer = document.getElementById("settingsFields");
+            fieldsContainer.innerHTML = "";
+            const section = settingsData.sections[activeSettingsSection];
+
+            Object.entries(section.fields).forEach(([key, field]) => {
+                const wrapper = document.createElement("div");
+                wrapper.className = field.type === "boolean" ? "field checkbox-row" : "field";
+
+                const label = document.createElement("label");
+                label.htmlFor = `setting-${activeSettingsSection}-${key}`;
+                label.textContent = field.label;
+
+                const input = createSettingsInput(key, field, section.values[key]);
+
+                if (field.type === "boolean") {
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(label);
+                } else {
+                    wrapper.appendChild(label);
+                    wrapper.appendChild(input);
+                }
+                fieldsContainer.appendChild(wrapper);
+            });
+        }
+
+        function createSettingsInput(key, field, value) {
+            let input;
+            if (field.type === "textarea") {
+                input = document.createElement("textarea");
+                input.value = value || "";
+            } else if (field.type === "select") {
+                input = document.createElement("select");
+                (field.options || []).forEach((option) => {
+                    const optionEl = document.createElement("option");
+                    optionEl.value = option;
+                    optionEl.textContent = option || "Not selected";
+                    input.appendChild(optionEl);
+                });
+                input.value = value || "";
+            } else {
+                input = document.createElement("input");
+                input.type = field.type === "password" ? "password" : field.type === "number" ? "number" : field.type === "boolean" ? "checkbox" : "text";
+                if (field.type === "boolean") {
+                    input.checked = !!value;
+                } else if (field.type === "list") {
+                    input.value = Array.isArray(value) ? value.join(", ") : (value || "");
+                    input.placeholder = "Comma separated values";
+                } else {
+                    input.value = value ?? "";
+                }
+            }
+
+            input.id = `setting-${activeSettingsSection}-${key}`;
+            input.dataset.section = activeSettingsSection;
+            input.dataset.key = key;
+            input.dataset.type = field.type;
+            return input;
+        }
+
+        async function saveSettings(event) {
+            event.preventDefault();
+            const inputs = document.querySelectorAll("#settingsFields input, #settingsFields textarea, #settingsFields select");
+            const sectionValues = {};
+            inputs.forEach((input) => {
+                const type = input.dataset.type;
+                if (type === "boolean") {
+                    sectionValues[input.dataset.key] = input.checked;
+                } else if (type === "number") {
+                    sectionValues[input.dataset.key] = input.value === "" ? 0 : Number(input.value);
+                } else if (type === "list") {
+                    sectionValues[input.dataset.key] = input.value.split(",").map((item) => item.trim()).filter(Boolean);
+                } else {
+                    sectionValues[input.dataset.key] = input.value;
+                }
+            });
+
+            try {
+                const response = await fetch("/settings", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sections: { [activeSettingsSection]: sectionValues } }),
+                });
+                const payload = await response.json();
+                if (!response.ok) throw new Error(payload.error || "Failed to save settings");
+                settingsData = payload.settings;
+                showToast(payload.message || "Settings saved.", "good");
+                renderSettingsFields();
+            } catch (error) {
+                console.error("Failed to save settings:", error);
+                showToast("Failed to save settings.", "bad");
+            }
+        }
+
         function createTableRow(job, index) {
             const row = document.createElement("tr");
 
@@ -377,6 +644,14 @@
             slCell.textContent = index + 1;
             slCell.className = "sl-column";
             row.appendChild(slCell);
+
+            const recordType = job.Record_Type || "Applied";
+            const statusCell = document.createElement("td");
+            const statusPill = document.createElement("span");
+            statusPill.className = `status-pill status-${recordType.toLowerCase()}`;
+            statusPill.textContent = recordType;
+            statusCell.appendChild(statusPill);
+            row.appendChild(statusCell);
 
             const titleCell = document.createElement("td");
             const titleLink = document.createElement("a");
@@ -387,9 +662,8 @@
             row.appendChild(titleCell);
 
             const companyCell = document.createElement("td");
-            companyCell.textContent = job.Company || "—";
+            companyCell.textContent = job.Company || "N/A";
             row.appendChild(companyCell);
-
             const hrCell = document.createElement("td");
             if (job.HR_Name && job.HR_Name !== "Unknown" && job.HR_Link) {
                 const hrLink = document.createElement("a");
@@ -405,57 +679,68 @@
             row.appendChild(hrCell);
 
             const extCell = document.createElement("td");
+            extCell.className = "external-column";
             const dateCell = document.createElement("td");
             dateCell.className = "date-column";
+            const reasonCell = document.createElement("td");
+            const detailsCell = document.createElement("td");
+            detailsCell.className = "details-cell";
             const appliedCell = document.createElement("td");
             appliedCell.className = "applied-column";
 
-            const isApplied = job.Date_Applied && job.Date_Applied !== "Pending";
+            const isApplied = recordType === "Applied" && job.Date_Applied && job.Date_Applied !== "Pending";
             if (isApplied) {
-                appliedCell.innerHTML = '<span class="tick">✓</span>';
+                appliedCell.innerHTML = '<span class="tick">&#10003;</span>';
                 dateCell.textContent = formatAppliedDate(job.Date_Applied);
                 appliedCell.title = `Applied at: ${dateCell.textContent}`;
             } else {
-                dateCell.textContent = "Pending";
+                dateCell.textContent = formatAppliedDate(job.Date_Tried || job.Date_Applied || "Pending");
             }
 
             if (job.External_Job_link === "Easy Applied") {
                 extCell.textContent = "Easy Applied";
-                appliedCell.innerHTML = '<span class="tick">✓</span>';
+                appliedCell.innerHTML = '<span class="tick">&#10003;</span>';
                 if (!isApplied) {
                     dateCell.textContent = "Easy Applied";
                 }
                 appliedCell.title = appliedCell.title || dateCell.textContent;
-            } else if (job.External_Job_link) {
+            } else if (job.External_Job_link && job.External_Job_link !== "Skipped") {
                 const extLink = document.createElement("a");
                 extLink.href = job.External_Job_link;
-                extLink.textContent = "External Link";
+                extLink.textContent = recordType === "Applied" ? "External Link" : job.External_Job_link;
                 extLink.target = "_blank";
 
-                extLink.addEventListener("click", async () => {
-                    try {
-                        const response = await fetch(`/applied-jobs/${encodeURIComponent(job.Job_ID)}`, {
-                            method: "PUT",
-                            headers: { "Content-Type": "application/json" },
-                        });
-                        if (response.ok) {
-                            appliedCell.innerHTML = '<span class="tick">✓</span>';
-                            job.Date_Applied = formatAppliedDate(new Date());
-                            dateCell.textContent = job.Date_Applied;
-                            appliedCell.title = `Applied at: ${job.Date_Applied}`;
+                if (recordType === "Applied") {
+                    extLink.addEventListener("click", async () => {
+                        try {
+                            const response = await fetch(`/applied-jobs/${encodeURIComponent(job.Job_ID)}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                            });
+                            if (response.ok) {
+                                appliedCell.innerHTML = '<span class="tick">&#10003;</span>';
+                                job.Date_Applied = formatAppliedDate(new Date());
+                                dateCell.textContent = job.Date_Applied;
+                                appliedCell.title = `Applied at: ${job.Date_Applied}`;
+                            }
+                        } catch (error) {
+                            console.error("Error updating applied date:", error);
                         }
-                    } catch (error) {
-                        console.error("Error updating applied date:", error);
-                    }
-                });
+                    });
+                }
 
                 extCell.appendChild(extLink);
             } else {
-                extCell.textContent = "N/A";
+                extCell.textContent = job.External_Job_link || "N/A";
             }
 
             row.appendChild(extCell);
             row.appendChild(dateCell);
+            reasonCell.textContent = job.Reason || recordType;
+            detailsCell.textContent = job.Details || job.Screenshot_Name || "N/A";
+            detailsCell.title = detailsCell.textContent;
+            row.appendChild(reasonCell);
+            row.appendChild(detailsCell);
             row.appendChild(appliedCell);
 
             return row;
@@ -473,7 +758,7 @@
                 return `${day.padStart(2, "0")} ${month.toLowerCase()} ${year}, ${timePart.padStart(8, "0")} ${suffix.toUpperCase()}`;
             }
 
-            const date = value instanceof Date ? value : new Date(String(value).replace(" ", "T"));
+            const date = value instanceof Date ? value : new Date(normalizeDateForParse(value));
             if (Number.isNaN(date.getTime())) {
                 return value || "Pending";
             }
@@ -503,7 +788,7 @@
         }
 
         function sortByAppliedDateDesc() {
-            jobsData.sort((a, b) => parseAppliedDate(b.Date_Applied) - parseAppliedDate(a.Date_Applied));
+            jobsData.sort((a, b) => parseAppliedDate(b.Date_Applied || b.Date_Tried) - parseAppliedDate(a.Date_Applied || a.Date_Tried));
         }
 
         function parseAppliedDate(value) {
@@ -529,8 +814,17 @@
                 return new Date(year, month, day, hours, minutes, seconds).getTime();
             }
 
-            const parsed = new Date(text.replace(" ", "T")).getTime();
+            const parsed = new Date(normalizeDateForParse(text)).getTime();
             return Number.isNaN(parsed) ? 0 : parsed;
+        }
+
+        function normalizeDateForParse(value) {
+            const text = String(value).trim();
+            const match = text.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2}:\d{2})(?:\.\d+)?$/);
+            if (match) {
+                return `${match[1]}T${match[2]}`;
+            }
+            return text.replace(" ", "T");
         }
 
         function sortByExternalLink() {
@@ -575,6 +869,7 @@
         }
 
         (async function init() {
+            await loadSettings();
             await fetchJobs();
             await refreshStatus(false);
             startStatusPolling();

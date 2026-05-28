@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto Job Bot Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-soft: #1f2937;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --border: #334155;
+      --accent: #38bdf8;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(135deg, rgba(56, 189, 248, 0.14), transparent 42%),
+        linear-gradient(315deg, rgba(34, 197, 94, 0.12), transparent 38%),
+        var(--bg);
+    }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--warn);
+    }
+
+    .dot.good { background: var(--good); }
+    .dot.bad { background: var(--bad); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(17, 24, 39, 0.86);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      padding: 20px;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.55);
+    }
+
+    .number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(56, 189, 248, 0.16);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      padding: 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button, a.button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      color: var(--text);
+      padding: 0 14px;
+      font: inherit;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #2563eb;
+      border-color: #60a5fa;
+    }
+
+    .result {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.62);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 46px;
+    }
+
+    .warning {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.10);
+    }
+
+    .list {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    code {
+      color: #bae6fd;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 6px;
+      padding: 2px 6px;
+    }
+
+    @media (max-width: 860px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Auto Job Bot Dashboard</h1>
+        <p>Static Netlify frontend for the Python bot dashboard API.</p>
+      </div>
+      <div class="pill"><span class="dot" id="statusDot"></span><span id="statusText">Backend not connected</span></div>
+    </div>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Connect Backend</h2>
+        <p>This Netlify site is only the frontend. The LinkedIn automation bot needs the Flask backend running on your computer or a server with Python, Chrome, and Selenium.</p>
+        <label for="apiUrl">Backend API URL</label>
+        <input id="apiUrl" placeholder="http://127.0.0.1:8080" />
+        <div class="actions">
+          <button class="primary" onclick="saveApiUrl()">Save API URL</button>
+          <button onclick="checkBackend()">Check Status</button>
+          <a class="button" id="openBackend" href="http://127.0.0.1:8080" target="_blank" rel="noreferrer">Open Backend Dashboard</a>
+        </div>
+        <div class="result warning" id="result">Backend is not connected yet. Start the backend with <code>python .\app.py</code>, then click <b>Check Status</b>.</div>
+      </div>
+
+      <div class="card">
+        <h2>How To Use</h2>
+        <div class="steps">
+          <div class="step"><span class="number">1</span><p>Run the Python backend locally or on a server: <code>python .\app.py</code>.</p></div>
+          <div class="step"><span class="number">2</span><p>Enter the backend URL here. Local default is <code>http://127.0.0.1:8080</code>.</p></div>
+          <div class="step"><span class="number">3</span><p>Use the backend dashboard to edit configuration, start/stop the bot, and view applied/skipped jobs.</p></div>
+        </div>
+      </div>
+
+      <div class="card full">
+        <h2>Why It Is Not Running On Netlify</h2>
+        <p>Netlify cannot run this bot by itself because the bot is not a static website. It needs a long-running Python process, local CSV files, Selenium, and a real Chrome browser session.</p>
+        <ul class="list">
+          <li><code>http://127.0.0.1:8080</code> means “this computer.” It works only if you run <code>python .\app.py</code> on the same computer where you opened the browser.</li>
+          <li>For other users to access it, deploy the Python backend to a VPS/server that supports Chrome and use that public HTTPS backend URL here.</li>
+          <li>Use Netlify for the frontend only; use a server/VPS/local machine for the bot backend.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const apiInput = document.getElementById("apiUrl");
+    const result = document.getElementById("result");
+    const statusText = document.getElementById("statusText");
+    const statusDot = document.getElementById("statusDot");
+    const openBackend = document.getElementById("openBackend");
+
+    apiInput.value = localStorage.getItem("autoJobBackendUrl") || "http://127.0.0.1:8080";
+    openBackend.href = apiInput.value;
+
+    function normalizeUrl(url) {
+      return url.replace(/\/+$/, "");
+    }
+
+    function saveApiUrl() {
+      const url = normalizeUrl(apiInput.value.trim() || "http://127.0.0.1:8080");
+      apiInput.value = url;
+      localStorage.setItem("autoJobBackendUrl", url);
+      openBackend.href = url;
+      result.innerHTML = `Saved backend URL: <code>${url}</code>`;
+    }
+
+    async function checkBackend() {
+      saveApiUrl();
+      const url = normalizeUrl(apiInput.value);
+      result.textContent = "Checking backend...";
+      statusText.textContent = "Checking...";
+      statusDot.className = "dot";
+
+      try {
+        const response = await fetch(`${url}/bot/status`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        statusText.textContent = `Backend connected: bot ${data.status}`;
+        statusDot.className = data.status === "running" ? "dot good" : "dot";
+        result.innerHTML = `Backend is reachable. Bot status: <code>${data.status}</code>. Open the backend dashboard for full controls.`;
+      } catch (error) {
+        statusText.textContent = "Backend not connected";
+        statusDot.className = "dot bad";
+        result.innerHTML = `Could not reach backend at <code>${url}</code>. Make sure Flask is running and reachable from this browser.`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -266,18 +266,20 @@ def get_page_info() -> tuple[WebElement | None, int | None]:
 
 
 
-def get_job_main_details(job: WebElement, blacklisted_companies: set, rejected_jobs: set) -> tuple[str, str, str, str, str, bool]:
+def get_job_main_details(job: WebElement, blacklisted_companies: set, rejected_jobs: set) -> tuple[str, str, str, str, str, bool, str | None]:
     '''
     # Function to get job main details.
-    Returns a tuple of (job_id, title, company, work_location, work_style, skip)
+    Returns a tuple of (job_id, title, company, work_location, work_style, skip, skip_reason)
     * job_id: Job ID
     * title: Job title
     * company: Company name
     * work_location: Work location of this job
     * work_style: Work style of this job (Remote, On-site, Hybrid)
     * skip: A boolean flag to skip this job
+    * skip_reason: Reason why this job was skipped
     '''
     skip = False
+    skip_reason = None
     job_details_button = job.find_element(By.TAG_NAME, 'a')  # job.find_element(By.CLASS_NAME, "job-card-list__title")  # Problem in India
     scroll_to_view(driver, job_details_button, True)
     job_id = job.get_dom_attribute('data-occludable-job-id')
@@ -296,12 +298,15 @@ def get_job_main_details(job: WebElement, blacklisted_companies: set, rejected_j
     if company in blacklisted_companies:
         print_lg(f'Skipping "{title} | {company}" job (Blacklisted Company). Job ID: {job_id}!')
         skip = True
+        skip_reason = "Blacklisted Company"
     elif job_id in rejected_jobs: 
         print_lg(f'Skipping previously rejected "{title} | {company}" job. Job ID: {job_id}!')
         skip = True
+        skip_reason = "Previously rejected"
     try:
         if job.find_element(By.CLASS_NAME, "job-card-container__footer-job-state").text == "Applied":
             skip = True
+            skip_reason = "Already applied"
             print_lg(f'Already applied to "{title} | {company}" job. Job ID: {job_id}!')
     except: pass
     try: 
@@ -312,7 +317,7 @@ def get_job_main_details(job: WebElement, blacklisted_companies: set, rejected_j
         discard_job()
         job_details_button.click() # To pass the error outside
     buffer(click_gap)
-    return (job_id,title,company,work_location,work_style,skip)
+    return (job_id,title,company,work_location,work_style,skip,skip_reason)
 
 
 # Function to check for Blacklisted words in About Company
@@ -785,16 +790,29 @@ def follow_company(modal: WebDriver = driver) -> None:
 
 
 #< Failed attempts logging
-def failed_job(job_id: str, job_link: str, resume: str, date_listed, error: str, exception: Exception, application_link: str, screenshot_name: str) -> None:
+def failed_job(job_id: str, job_link: str, resume: str, date_listed, error: str, exception: Exception, application_link: str, screenshot_name: str,
+               title: str = "N/A", company: str = "N/A", work_location: str = "N/A", work_style: str = "N/A") -> None:
     '''
     Function to update failed jobs list in excel
     '''
     try:
+        fieldnames = ['Job ID', 'Title', 'Company', 'Work Location', 'Work Style', 'Job Link', 'Resume Tried', 'Date listed', 'Date Tried', 'Assumed Reason', 'Stack Trace', 'External Job link', 'Screenshot Name']
+        if os.path.exists(failed_file_name):
+            with open(failed_file_name, 'r', newline='', encoding='utf-8') as existing_file:
+                reader = csv.DictReader(existing_file)
+                existing_fieldnames = reader.fieldnames or []
+                existing_rows = list(reader)
+            if any(field not in existing_fieldnames for field in fieldnames):
+                with open(failed_file_name, 'w', newline='', encoding='utf-8') as rewrite_file:
+                    writer = csv.DictWriter(rewrite_file, fieldnames=fieldnames, extrasaction='ignore')
+                    writer.writeheader()
+                    for row in existing_rows:
+                        writer.writerow(row)
+
         with open(failed_file_name, 'a', newline='', encoding='utf-8') as file:
-            fieldnames = ['Job ID', 'Job Link', 'Resume Tried', 'Date listed', 'Date Tried', 'Assumed Reason', 'Stack Trace', 'External Job link', 'Screenshot Name']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             if file.tell() == 0: writer.writeheader()
-            writer.writerow({'Job ID':truncate_for_csv(job_id), 'Job Link':truncate_for_csv(job_link), 'Resume Tried':truncate_for_csv(resume), 'Date listed':truncate_for_csv(date_listed), 'Date Tried':datetime.now(), 'Assumed Reason':truncate_for_csv(error), 'Stack Trace':truncate_for_csv(exception), 'External Job link':truncate_for_csv(application_link), 'Screenshot Name':truncate_for_csv(screenshot_name)})
+            writer.writerow({'Job ID':truncate_for_csv(job_id), 'Title':truncate_for_csv(title), 'Company':truncate_for_csv(company), 'Work Location':truncate_for_csv(work_location), 'Work Style':truncate_for_csv(work_style), 'Job Link':truncate_for_csv(job_link), 'Resume Tried':truncate_for_csv(resume), 'Date listed':truncate_for_csv(date_listed), 'Date Tried':datetime.now(), 'Assumed Reason':truncate_for_csv(error), 'Stack Trace':truncate_for_csv(exception), 'External Job link':truncate_for_csv(application_link), 'Screenshot Name':truncate_for_csv(screenshot_name)})
             file.close()
     except Exception as e:
         print_lg("Failed to update failed jobs list!", e)
@@ -884,9 +902,12 @@ def apply_to_jobs(search_terms: list[str]) -> None:
                     if current_count >= switch_number: break
                     print_lg("\n-@-\n")
 
-                    job_id,title,company,work_location,work_style,skip = get_job_main_details(job, blacklisted_companies, rejected_jobs)
+                    job_id,title,company,work_location,work_style,skip,skip_reason = get_job_main_details(job, blacklisted_companies, rejected_jobs)
                     
-                    if skip: continue
+                    if skip:
+                        job_link = "https://www.linkedin.com/jobs/view/"+job_id
+                        failed_job(job_id, job_link, "N/A", "Unknown", skip_reason or "Skipped from search list", skip_reason or "Skipped from search list", "Skipped", "Not Available", title, company, work_location, work_style)
+                        continue
                     # Redundant fail safe check for applied jobs!
                     try:
                         if job_id in applied_jobs or find_by_class(driver, "jobs-s-apply__application-link", 2):
@@ -912,7 +933,7 @@ def apply_to_jobs(search_terms: list[str]) -> None:
                         rejected_jobs, blacklisted_companies, jobs_top_card = check_blacklist(rejected_jobs,job_id,company,blacklisted_companies)
                     except ValueError as e:
                         print_lg(e, 'Skipping this job!\n')
-                        failed_job(job_id, job_link, resume, date_listed, "Found Blacklisted words in About Company", e, "Skipped", screenshot_name)
+                        failed_job(job_id, job_link, resume, date_listed, "Found Blacklisted words in About Company", e, "Skipped", screenshot_name, title, company, work_location, work_style)
                         skip_count += 1
                         continue
                     except Exception as e:
@@ -964,7 +985,7 @@ def apply_to_jobs(search_terms: list[str]) -> None:
                     description, experience_required, skip, reason, message = get_job_description()
                     if skip:
                         print_lg(message)
-                        failed_job(job_id, job_link, resume, date_listed, reason, message, "Skipped", screenshot_name)
+                        failed_job(job_id, job_link, resume, date_listed, reason, message, "Skipped", screenshot_name, title, company, work_location, work_style)
                         rejected_jobs.add(job_id)
                         skip_count += 1
                         continue

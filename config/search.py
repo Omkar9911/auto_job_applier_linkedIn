@@ -96,5 +96,20 @@ current_experience = 2             # Integers > -2 (Ex: -1, 0, 1, 2, 3, 4...)
 
 
 ############################################################################################################
+'''
+THANK YOU for using my tool ðŸ˜Š! Wishing you the best in your job hunt ðŸ™ŒðŸ»!
 
+Sharing is caring! If you found this tool helpful, please share it with your peers ðŸ¥º. Your support keeps this project alive.
+
+Support my work on <PATREON_LINK>. Together, we can help more job seekers.
+
+As an independent developer, I pour my heart and soul into creating tools like this, driven by the genuine desire to make a positive impact.
+
+Your support, whether through donations big or small or simply spreading the word, means the world to me and helps keep this project alive and thriving.
+
+Gratefully yours ðŸ™ðŸ»,
+Sai Vignesh Golla
+'''
 ############################################################################################################
+from config.dynamic_settings import apply_overrides
+apply_overrides(globals(), "search")

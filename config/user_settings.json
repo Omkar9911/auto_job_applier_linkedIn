@@ -1,0 +1,18 @@
+{
+  "personals": {
+    "first_name": "Omkar"
+  },
+  "settings": {
+    "alternate_sortby": true,
+    "click_gap": 1,
+    "cycle_date_posted": true,
+    "failed_file_name": "all excels/all_failed_applications_history.csv",
+    "file_name": "all excels/all_applied_applications_history.csv",
+    "keep_screen_awake": true,
+    "run_in_background": false,
+    "run_non_stop": false,
+    "safe_mode": true,
+    "showAiErrorAlerts": false,
+    "stealth_mode": true
+  }
+}
