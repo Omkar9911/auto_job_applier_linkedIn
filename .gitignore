@@ -9,6 +9,6 @@ logs
 old
 
 secrets.py
-config/personals.py
+!config/secrets.py
 .venv
 apikeys.py

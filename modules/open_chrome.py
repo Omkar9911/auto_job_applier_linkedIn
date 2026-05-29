@@ -8,7 +8,10 @@ from config.questions import default_resume_path
 import os
 import re
 import subprocess
-if stealth_mode:
+RENDER_RUNTIME = os.environ.get("RENDER") == "true"
+USE_STEALTH = stealth_mode and not RENDER_RUNTIME
+
+if USE_STEALTH:
     import undetected_chromedriver as uc
 else: 
     from selenium import webdriver
@@ -42,8 +45,9 @@ def get_installed_chrome_major_version():
 def createChromeSession(isRetry: bool = False):
     make_directories([file_name,failed_file_name,logs_folder_path+"/screenshots",default_resume_path,generated_resume_path+"/temp"])
     # Set up WebDriver with Chrome Profile
-    options = uc.ChromeOptions() if stealth_mode else Options()
-    if run_in_background:   options.add_argument("--headless")
+    options = uc.ChromeOptions() if USE_STEALTH else Options()
+    if run_in_background or RENDER_RUNTIME:
+        options.add_argument("--headless=new")
     if disable_extensions:  options.add_argument("--disable-extensions")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
@@ -62,7 +66,7 @@ def createChromeSession(isRetry: bool = False):
     else:
         print_lg("Logging in with a guest profile, Web history will not be saved!")
         options.add_argument(f"--user-data-dir={get_default_temp_profile()}")
-    if stealth_mode:
+    if USE_STEALTH:
         # try: 
         #     driver = uc.Chrome(driver_executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe", options=options)
         # except (FileNotFoundError, PermissionError) as e: 
@@ -94,6 +98,9 @@ except Exception as e:
     critical_error_log("In Opening Chrome", e)
     from pyautogui import alert
     alert(msg, "Error in opening chrome")
-    try: driver.quit()
-    except NameError: exit()
+    try:
+        if driver:
+            driver.quit()
+    except NameError:
+        exit()
     

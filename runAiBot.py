@@ -9,6 +9,18 @@ import re
 import time
 import pyautogui
 
+if os.environ.get("RENDER") == "true":
+    def _render_alert(text="", title="", button="OK", **kwargs):
+        print(f"[Render alert skipped] {title}: {text}")
+        return button
+
+    def _render_confirm(text="", title="", buttons=("OK",), **kwargs):
+        print(f"[Render confirm skipped] {title}: {text}")
+        return buttons[0] if buttons else "OK"
+
+    pyautogui.alert = _render_alert
+    pyautogui.confirm = _render_confirm
+
 # Set CSV field size limit to prevent field size errors
 csv.field_size_limit(1000000)  # Set to 1MB instead of default 131KB
 

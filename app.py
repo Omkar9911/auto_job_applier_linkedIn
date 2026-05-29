@@ -79,6 +79,17 @@ class BotManager:
             )
             self._write_pid_file(self._proc.pid)
             self._last_start_ts = time.time()
+            time.sleep(1)
+            code = self._proc.poll()
+            if code is not None:
+                error_tail = self._read_log_tail(log_path)
+                self._cleanup_locked()
+                return False, {
+                    "error": "Bot failed to start",
+                    "exit_code": code,
+                    "log": os.path.normpath(log_path),
+                    "details": error_tail,
+                }
             return True, {"status": "running", "pid": self._proc.pid, "log": os.path.normpath(log_path)}
 
     def stop(self) -> tuple[bool, dict]:
@@ -174,6 +185,16 @@ class BotManager:
             os.kill(pid, 15)
         except Exception:
             pass
+
+    def _read_log_tail(self, log_path: str, max_chars: int = 4000) -> str:
+        try:
+            with open(log_path, "r", encoding="utf-8", errors="replace") as log_file:
+                log_file.seek(0, os.SEEK_END)
+                size = log_file.tell()
+                log_file.seek(max(0, size - max_chars))
+                return log_file.read().strip()
+        except Exception:
+            return ""
 
 
 bot_manager = BotManager()
