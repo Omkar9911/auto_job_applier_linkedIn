@@ -16,6 +16,7 @@ if USE_STEALTH:
 else: 
     from selenium import webdriver
     from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.chrome.service import Service
     # from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
@@ -52,6 +53,8 @@ def createChromeSession(isRetry: bool = False):
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--remote-debugging-port=9222")
     chrome_binary = os.environ.get("CHROME_BIN")
     chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
     if chrome_binary:
@@ -79,7 +82,11 @@ def createChromeSession(isRetry: bool = False):
                 chrome_major_version = get_installed_chrome_major_version() or 148
                 print_lg(f"Using Chrome major version {chrome_major_version} for undetected ChromeDriver.")
                 driver = uc.Chrome(options=options, version_main=chrome_major_version)
-    else: driver = webdriver.Chrome(options=options) #, service=Service(executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe"))
+    else:
+        if chromedriver_path and os.path.exists(chromedriver_path):
+            driver = webdriver.Chrome(service=Service(executable_path=chromedriver_path), options=options)
+        else:
+            driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     wait = WebDriverWait(driver, 5)
     actions = ActionChains(driver)

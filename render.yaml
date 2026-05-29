@@ -2,8 +2,10 @@ services:
   - type: web
     name: auto-job-applier-linkedin
     env: docker
+    dockerfilePath: ./Dockerfile
     plan: starter
     autoDeploy: true
+    healthCheckPath: /bot/status
     disk:
       name: auto-job-data
       mountPath: /app/all excels

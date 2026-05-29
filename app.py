@@ -400,6 +400,17 @@ def bot_status():
     return jsonify(bot_manager.status())
 
 
+@app.route("/deploy/runtime", methods=["GET"])
+def deploy_runtime():
+    return jsonify({
+        "python": sys.version,
+        "render": os.environ.get("RENDER") == "true",
+        "chrome_bin": os.environ.get("CHROME_BIN", ""),
+        "chromedriver_path": os.environ.get("CHROMEDRIVER_PATH", ""),
+        "bot_script_exists": os.path.exists(BOT_SCRIPT),
+    })
+
+
 @app.route("/bot/start", methods=["POST"])
 def bot_start():
     ok, payload = bot_manager.start()
