@@ -45,6 +45,13 @@ def createChromeSession(isRetry: bool = False):
     options = uc.ChromeOptions() if stealth_mode else Options()
     if run_in_background:   options.add_argument("--headless")
     if disable_extensions:  options.add_argument("--disable-extensions")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    chrome_binary = os.environ.get("CHROME_BIN")
+    chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+    if chrome_binary:
+        options.binary_location = chrome_binary
 
     print_lg("IF YOU HAVE MORE THAN 10 TABS OPENED, PLEASE CLOSE OR BOOKMARK THEM! Or it's highly likely that application will just open browser and not do anything!")
     profile_dir = find_default_profile_directory()
@@ -61,12 +68,13 @@ def createChromeSession(isRetry: bool = False):
         # except (FileNotFoundError, PermissionError) as e: 
         #     print_lg("(Undetected Mode) Got '{}' when using pre-installed ChromeDriver.".format(type(e).__name__)) 
             print_lg("Downloading Chrome Driver... This may take some time. Undetected mode requires download every run!")
-            chrome_major_version = get_installed_chrome_major_version() or 148
-            if chrome_major_version:
+            if chromedriver_path and os.path.exists(chromedriver_path):
+                print_lg(f"Using installed ChromeDriver at {chromedriver_path}.")
+                driver = uc.Chrome(driver_executable_path=chromedriver_path, options=options)
+            else:
+                chrome_major_version = get_installed_chrome_major_version() or 148
                 print_lg(f"Using Chrome major version {chrome_major_version} for undetected ChromeDriver.")
                 driver = uc.Chrome(options=options, version_main=chrome_major_version)
-            else:
-                driver = uc.Chrome(options=options)
     else: driver = webdriver.Chrome(options=options) #, service=Service(executable_path="C:\\Program Files\\Google\\Chrome\\chromedriver-win64\\chromedriver.exe"))
     driver.maximize_window()
     wait = WebDriverWait(driver, 5)

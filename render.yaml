@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: auto-job-applier-linkedin
+    env: docker
+    plan: starter
+    autoDeploy: true
+    disk:
+      name: auto-job-data
+      mountPath: /app/all excels
+      sizeGB: 1

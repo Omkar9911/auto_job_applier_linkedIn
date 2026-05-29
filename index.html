@@ -234,7 +234,7 @@
     <div class="topbar">
       <div class="brand">
         <h1>Auto Job Bot Dashboard</h1>
-        <p>Static Netlify frontend for the Python bot dashboard API.</p>
+        <p>Static Vercel frontend for the Python bot dashboard API.</p>
       </div>
       <div class="pill"><span class="dot" id="statusDot"></span><span id="statusText">Backend not connected</span></div>
     </div>
@@ -242,7 +242,7 @@
     <section class="grid">
       <div class="card">
         <h2>Connect Backend</h2>
-        <p>This Netlify site is only the frontend. The LinkedIn automation bot needs the Flask backend running on your computer or a server with Python, Chrome, and Selenium.</p>
+        <p>This Vercel site is only the frontend. The LinkedIn automation bot needs the Flask backend running on your computer or a server with Python, Chrome, and Selenium.</p>
         <label for="apiUrl">Backend API URL</label>
         <input id="apiUrl" placeholder="http://127.0.0.1:8080" />
         <div class="actions">
@@ -263,12 +263,12 @@
       </div>
 
       <div class="card full">
-        <h2>Why It Is Not Running On Netlify</h2>
-        <p>Netlify cannot run this bot by itself because the bot is not a static website. It needs a long-running Python process, local CSV files, Selenium, and a real Chrome browser session.</p>
+        <h2>Why It Is Not Running On Vercel</h2>
+        <p>Vercel cannot run this bot by itself because the bot is not a static website. It needs a long-running Python process, local CSV files, Selenium, and a real Chrome browser session.</p>
         <ul class="list">
           <li><code>http://127.0.0.1:8080</code> means “this computer.” It works only if you run <code>python .\app.py</code> on the same computer where you opened the browser.</li>
           <li>For other users to access it, deploy the Python backend to a VPS/server that supports Chrome and use that public HTTPS backend URL here.</li>
-          <li>Use Netlify for the frontend only; use a server/VPS/local machine for the bot backend.</li>
+          <li>Use Vercel for the frontend only; use a server/VPS/local machine for the bot backend.</li>
         </ul>
       </div>
     </section>

@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, request
 from flask_cors import CORS
 import csv
 from datetime import datetime
-import importlib
+import ast
 import json
 import os
 import subprocess
@@ -322,16 +322,41 @@ def get_settings_payload() -> dict:
     saved = load_dashboard_settings()
     sections = {}
     for section_key, section in SETTINGS_SCHEMA.items():
-        module = importlib.import_module(section["module"])
+        defaults = load_config_defaults(section["module"])
         values = {}
         for field_key, field in section["fields"].items():
-            values[field_key] = saved.get(section_key, {}).get(field_key, getattr(module, field_key, ""))
+            values[field_key] = saved.get(section_key, {}).get(field_key, defaults.get(field_key, ""))
         sections[section_key] = {
             "label": section["label"],
             "fields": section["fields"],
             "values": values,
         }
     return {"sections": sections, "bot_running": bot_manager.status()["status"] == "running"}
+
+
+def load_config_defaults(module_name: str) -> dict:
+    config_path = os.path.join(*module_name.split(".")) + ".py"
+    if not os.path.exists(config_path):
+        return {}
+
+    defaults = {}
+    try:
+        with open(config_path, "r", encoding="utf-8") as config_file:
+            tree = ast.parse(config_file.read(), filename=config_path)
+    except Exception:
+        return defaults
+
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        try:
+            value = ast.literal_eval(node.value)
+        except Exception:
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name):
+                defaults[target.id] = value
+    return defaults
 
 
 def formatted_applied_datetime() -> str:
