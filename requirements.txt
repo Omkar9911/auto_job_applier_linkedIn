@@ -1,0 +1,9 @@
+flask
+flask-cors
+gunicorn
+selenium
+undetected-chromedriver
+pyautogui
+setuptools
+openai
+google-generativeai
